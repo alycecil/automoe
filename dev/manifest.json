@@ -1,0 +1,22 @@
+{
+  "name": "AutoMoe",
+  "description": "Manage My Moe",
+  "version": "2.0",
+  "permissions": [
+    "storage","activeTab", "tabs", "http://us-moe-app.amz-aws.jp/*", "http://*.amz-aws.jp/*"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "browser_action": {
+    "default_title": "Make this page red"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*.amz-aws.jp/*"],
+      "js": ["jquery.js","contextscript.js"]
+    }
+  ],
+  "manifest_version": 2
+}
