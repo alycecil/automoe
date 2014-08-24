@@ -1,0 +1,90 @@
+REQUIREMENTS
+o A computer with WiFi capabilities (no Wifi PC? See http://pastebin.com/ytN7T5aM instead!), connected through the Internet either via WiFi or Ethernet (see Important note for Ethernet users at the bottom of this paste first if your PC is connected through Ethernet, the instructions vary slightly from the wifi only guide)
+o MyPublicWiFi - www.mypublicwifi.com
+o WireShark - www.wireshark.org
+o A user-agent switcher extension for your browser of choice
+FireFox: UAControl
+Chrome: User-Agent Switcher for Chrome
+o Adblock Plus
+
+NOTE: This guide was written with Windows 7 in mind.
+
+[Update 1-6-2014] It's best to set browser play up for both Firefox and Chrome, as most of the actions under the Communication-button don't work on Chrome.
+
+ACQUIRING THE USER-AGENT STRING
+1. Download and install MyPublicWiFi, restart computer when it asks you to
+
+2. Download and install WireShark, complete the WinPcap installation as well
+
+3. Run MyPublicWiFi, make sure Automatic Hotspot Configuration is selected and Enable Internet Sharing is ticked. Select the interface that is connected to Internet via the drop-down menu if needed
+
+4. Click on Set Up And Start Hotspot, the program will automatically configure your network and start the Hotspot. 
+
+5. Go to Control Panel > Network And Sharing Center > Change Adapter Settings and take note of the new connection that MyPublicWiFi has created (Microsoft Virtual WiFi Miniport Adapter), you'll need it for WireShark later
+
+6. Connect your mobile or tablet device to the Hotspot (default SSID: MyPublicWifi) and input the Network key as shown in MyPublicWiFi. Make sure it works by browsing on your device a bit. If your device has a tendency to switch back to your home network, temporarily delete the home network connection
+
+7. Start up WireShark. Under Capture, click on Interface List and make sure only the connection that MyPublicWiFi has created is selected. Hit Start
+
+8. Grab your device, check if it's still connected to the Hotspot and fire up Moe Can Change. Click on a few buttons to generate traffic for WireShark to capture
+
+9. Go back to WireShark and press Ctrl+F to open the Find Packet search window
+
+10. Under Find, select String. Under Search In, select Packet Details. Put in user-agent as the Filter-value and hit the Find button.
+The user-agent it finds should look similar to the following: 
+Mozilla/5.0 (Linux; U; Android 2.3.3; en-nl; HTC Vision Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1/AMBITION_UA/GooglePlay/Android-NL KPN/MOE_ver04:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+(xxxxx... will actually show up as a personal string to log you in to your account)
+
+11. Rightclick on the string, Copy > Value and paste it in a document. Save it for later.
+
+NOTE: After starting the Hotspot, your connection will be permanently shared. After getting the string and shutting down the Hotspot, you can turn this off by going to Control Panel > Network and Sharing Center > Change Adapter Settings > Rightclick your internet connection > Properties > Sharing tab > Untick Allow other network users to connect through this computer's Internet connection.
+
+MAKING MCC WORK IN YOUR BROWSER
+FOR CHROME USERS
+1. Install User-Agent Switcher for Chrome and go to its Options
+
+2. Create a new custom user agent
+New User-agent name: Moe Can Change
+New User-Agent String: Paste captured string here
+Group: Leave blank
+Append?: Replace
+Indicator Flag: MCC
+Press Add
+
+3. Click on Permanent Spoof list
+Domain: amz-aws.jp
+User-Agent String: Moe Can Change
+Press Add
+
+4. Install Adblock Plus and restart Chrome, hit the ABP button and click on Options
+
+5. Click on the Add Your Own Filters tab and add the following url:
+us-moe-app.amz-aws.jp/js/check.min.js
+(remove the http:// part if necessary)
+
+6. Close the tab and surf to http://us-moe-app.amz-aws.jp/ to enjoy sweet, sweet browser play!
+
+FOR FIREFOX USERS
+1. Install UAControl, restart Firefox and open UAControl's Options
+
+2. Click on Add Site
+Site: amz-aws.jp
+Action: Custom: Paste captured string here
+Hit OK
+
+3. Install Adblock Plus and restart Firefox, press Ctrl+Shift+F to open the Filter Preferences
+
+4. Click on the Custom Filters tab, add a new Filter Group and give it a name
+
+5. Now click on the Add Filter button and paste the following url: 
+us-moe-app.amz-aws.jp/js/check.min.js
+(remove the http:// part if necessary)
+
+5. Close the window and surf to http://us-moe-app.amz-aws.jp/ to enjoy sweet, sweet browser play!
+
+Known Firefox issue: Certain buttons have no background because this bit is only coded for Webkit browsers such as Chrome.
+
+IMPORTANT NOTE FOR ETHERNET USERS
+You can follow the user agent string guide, but make sure of the following:
+o Be connected through the Internet via Ethernet, make sure your WiFi is on but disconnected
+o Select your Ethernet connection from the drop-down menu in MyPublicWiFi instead of the WiFi one
