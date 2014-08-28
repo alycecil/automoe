@@ -74,18 +74,23 @@ function goHome() {
 //lets go recommend some things
 function letsGoRecomend() {
     //click the recommend costume button
-    var recCostume = $('input[value="Rec Costume"]');
+    var recCostume = $('input.give[value="Rec Costume"]').click();
 
     //is recommend on page?
     if (recCostume == null || recCostume.length == 0) {
+    	var giveIndex = $('a[href*="us-moe-app.amz-aws.jp/give/index.php?"]');
+    
         //roulette ?
         var roulette = $('img[alt="Roulette Link"]');
 
-        if (roulette == null || roulette.length == 0) { //go to room
-            goHome();
-        } else {
-        	//click the element
+		if (hasData(giveIndex)) { //go to room
+            //click the element
+            giveIndex[0].click();
+        } else if (hasData(roulette)) { //go to room
+            //click the element
             roulette.parent()[0].click();
+        } else {
+            goHome();
         }
     } else {
         done();
@@ -459,10 +464,13 @@ function getStats(){
 
 // Variables!
 var time = 0;
-var prefix = "_none"; // will be the tabId
+var prefix = "1";//"_none"; // will be the tabId
 var postedTimes = false;
 var timeOutNext = 0;
 var i = 0;
+
+//time = [0ms->3000ms]+2^[0->10] ms + 663 ms
+time = Math.floor(Math.pow(2, Math.random()*10) + 663 + Math.random()*3000);
 
 //
 /// Listener for getting tabId back
@@ -524,9 +532,12 @@ function main(){
 			}else{
 				//flat line dixie, lets do some stuff 
 				//after a little more delay
-				//time = [0ms->3000ms]+2^[0->10] ms + 663 ms
-				time = Math.floor(Math.pow(2, Math.random()*10) + 663 + Math.random()*3000);
-	
+				if(!postedTimes){
+  	 		  		chrome.storage.local.get('task'+prefix, function(items) {
+		    			$('body').prepend("event="+items['task'+prefix]+", prefix="+prefix+", delay="+time+"<br>");
+					});
+						postedTimes=true;
+				}
 				setTimeout(letsGo, time);
 			}
 		});
