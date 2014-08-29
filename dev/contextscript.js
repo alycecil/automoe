@@ -19,7 +19,7 @@ function done() {
 //choose next activity
 function chooseNext() {
     //choose a random task.
-    taskList = ["friend", "recommend", "event", "social"];
+    taskList = ["friend", "recommend", "event", "social", "rest"];
 
 	//chose next task, RANDOMLY!
     var next = Math.floor((Math.random() * taskList.length));
@@ -228,8 +228,8 @@ function summer2014() {
             var now = new Date().getTime();
             var delta = now - data['timeOutSummer'+prefix];
             
-            //every ~3-18 minutes (~10minutes)
-            var nextTime = 60 * Math.floor((Math.random() * 15000) + 3000);
+            //every ~9-24 minutes (~16minutes)
+            var nextTime = 60 * Math.floor((Math.random() * 15000) + 9000);
             if (delta > nextTime) {
                
                 data['timeOutSummer'+prefix]= 0;
@@ -386,6 +386,32 @@ function checkMyGirl() {
     return false;
 }
 
+function letsNap(){
+ chrome.storage.local.get('lastNap'+prefix, function(items) {
+
+	var now = new Date().getTime();
+	var napTime = Math.floor(Math.random()*1000*60*16);
+	if(items['lastNap'+prefix]==null || items['lastNap'+prefix]+napTime*2<now){
+  		var data = {};
+    	data['lastNap'+prefix]= now+napTime;
+            
+		chrome.storage.local.set(data);
+		
+		
+    	$('body').prepend("nap for "+napTime);
+	    setTimeout(function(){
+    		done();
+       		reloadMe();
+    	},napTime);
+	}else{
+		$('body').prepend("No rest for the wicked.");
+		done();
+		letsGo();
+	}
+ });
+}
+
+
 //
 // - - - - - - - - - 
 // -  main  block  -
@@ -409,6 +435,8 @@ function letsGo() {
                         summer2014();
                     } else if (items.task == "friend") {
                         letsGoFriend();
+                    } else if(items.task == "rest"){
+                    	letsNap();
                     } else {
 
 						//must be done or someones messing with us
