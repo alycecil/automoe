@@ -254,8 +254,11 @@ function summer2014() {
 //run the socialize link, its a simple event.
 function socialize() {
     var button = $('a[href*="/contact/irara_contact_conf.php"]');
-
-    if (hasData(button)) {
+	var friendPage = $('a[href*="/contact/index.php"');
+	if(hasData(friendPage)){
+		done();
+		friendPage[0].click();
+	}else if (hasData(button)) {
         done();
         button[0].click();
     } else {
@@ -524,7 +527,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
     
     	if(!postedTimes){
   	   		chrome.storage.local.get('task'+prefix, function(items) {
-		    	$('body').prepend("event="+items['task'+prefix]+", prefix="+prefix+", delay="+time+"<br>");
+		    	$('body').prepend("event="+items['task'+prefix]+", prefix="+prefix+", delay="+time+", fail="+failTime+"<br>");
 			});
 			postedTimes=true;
 		}
@@ -575,9 +578,10 @@ function main(){
 				//after a little more delay
 				if(!postedTimes){
   	 		  		chrome.storage.local.get('task'+prefix, function(items) {
-		    			$('body').prepend("event="+items['task'+prefix]+", prefix="+prefix+", delay="+time+"<br>");
+		    			$('body').prepend("event="+items['task'+prefix]+", prefix="+prefix+", delay="+time+", fail="+failTime+"<br>");
 					});
-						postedTimes=true;
+					
+					postedTimes=true;
 				}
 				setTimeout(letsGo, time);
 			}
@@ -591,5 +595,5 @@ function main(){
 //
 main();
 
-
-setTimeout(reloadMe,1000*60*20);
+var failTime = Math.floor(Math.random()*1000*60*13+8000);
+setTimeout(reloadMe,failTime);
