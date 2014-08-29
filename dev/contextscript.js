@@ -46,6 +46,17 @@ function amIHome() {
     return hasData(memos);
 }
 
+
+//reload
+function reloadMe(){
+	console.log("reload !");
+	window.location.reload();
+	
+	//recurve call jic
+	setTimeout(reloadMe,1000*60*5);
+}
+
+
 //
 // navigate to home page
 //
@@ -56,6 +67,7 @@ function goHome() {
 
         if (room == null || room.length == 0) {
             console.log("lost room");
+            setTimeout(reloadMe,1000*60*5);
         } else {
             room.click();
         }
@@ -65,6 +77,7 @@ function goHome() {
 
         if (room == null || room.length == 0) {
             console.log("lost root");
+            setTimeout(reloadMe,1000*60*5);
         } else {
             room[0].click();
         }
