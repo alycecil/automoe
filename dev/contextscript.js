@@ -562,3 +562,6 @@ function main(){
 // Run main function!
 //
 main();
+
+
+setTimeout(reloadMe,1000*60*20);
