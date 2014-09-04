@@ -26,7 +26,7 @@ function doneEvent(){
 //choose next activity
 function chooseNext() {
     //choose a random task.
-    taskList = [/*"friend",*/ "recommend", "event", "social", "rest"];
+    taskList = ["friend", "recommend", "event", "social", "rest"];
 
     //chose next task, RANDOMLY!
     var next = Math.floor((Math.random() * taskList.length));
@@ -94,7 +94,7 @@ function goHome() {
 //lets go recommend some things
 function letsGoRecomend() {
     //click the recommend costume button
-    var recCostume = $('input.give[value="Rec Costume"]').click();
+    var recCostume = $('input.give[value="Rec Costume"]');
 
     //is recommend on page?
     if (recCostume == null || recCostume.length == 0) {
@@ -446,34 +446,104 @@ function socialize() {
 // Scroll through the friends link until I find something to do.
 //
 function letsGoFriend() {
-    var friendsList = $('a[href^="http://us-moe-app.amz-aws.jp/friend/list.php"]');
-    var allMyFriends = $('a[href^="http://us-moe-app.amz-aws.jp/friend/index.php"]');
-    var blanket = $('a.button1:contains("The blanket is off")');
-    var bother = $('a.button1:contains("Bother")');
-    var other = $('a[href^="http://us-moe-app.amz-aws.jp/friend/list.php"]:contains("Others")');
-    //var next = $('img[src="http://us-moe-r53.amz-aws.jp/img/hp_sp/n_r.png"]').parent('a[href*="/friend/index.php"]')
+ chrome.storage.local.get(['friendsHit' + prefix], function(items){
+   var value = 0;
+   
+   if(items['friendsHit' + prefix]!=null){
+   	value = items['friendsHit' + prefix];
+   }
+   
+   setFriendsData(value+1);
+   
+   actualFriendsDo(value);
+ });
+}
 
-    if (hasData(blanket)) {
-        done();
+function setFriendsData(value){
+	var data = {};
+   data['friendsHit' + prefix]=value;
+   
+   chrome.storage.local.set(data);
+}
+
+function actualFriendsDo(hits){
+    
+ if(window.location.pathname=="/give/end.php"){
+ var friendsList = $('a[href^="http://us-moe-app.amz-aws.jp/friend/list.php"]');
+	var allMyFriends = $('a[href^="http://us-moe-app.amz-aws.jp/friend/index.php"]');
+	if (hasData(allMyFriends)) {
+    	var index = Math.floor( Math.random()*allMyFriends.length);
+        allMyFriends[index].click();
+    }else if (hasData(friendsList)) {
+   		var index = Math.floor( Math.random()*friendsList.length);
+        friendsList[index].click();
+    } else {
+        goHome();
+    }	
+ }else if(window.location.pathname=="/give/index.php"){
+ var friendsList = $('a[href^="http://us-moe-app.amz-aws.jp/friend/list.php"]');
+	var recCostume = $('input.give[value="Rec Costume"]');
+		
+	if(hasData(recCostume)){
+		recCostume.click();
+	}else if (hasData(friendsList)) {
+   		var index = Math.floor( Math.random()*friendsList.length);
+        friendsList[index].click();
+    } else {
+        goHome();
+    }
+ }else if(window.location.pathname=="/friend/index.php"){
+ 	var giveIndex = $('a[href*="/give/index.php?"]');
+ 	var blanket = $('a.button1:contains("The blanket is off")');
+    var bother = $('a.button1:contains("Bother")');
+    var friendsList = $('a[href^="http://us-moe-app.amz-aws.jp/friend/list.php"]');
+    
+    if (hasData(giveIndex)) {
+    	giveIndex[0].click();
+    }else if (hasData(blanket)) {
+        done();setFriendsData(0);
         blanket[0].click();
     } else if (hasData(bother)) {
-        done();
+        done();setFriendsData(0);
         bother[0].click();
-    } //else if(hasData(next)){
+    } else if (hasData(friendsList)) {
+   		var index = Math.floor( Math.random()*friendsList.length);
+        friendsList[index].click();
+    } else {
+        goHome();
+    }
+    
+ }else{
+	var friendsList = $('a[href^="http://us-moe-app.amz-aws.jp/friend/list.php"]');
+    var allMyFriends = $('a[href^="http://us-moe-app.amz-aws.jp/friend/index.php"]');
+    var other = $('a[href^="http://us-moe-app.amz-aws.jp/friend/list.php"]:contains("Others")');
+    //var next = $('img[src="http://us-moe-r53.amz-aws.jp/img/hp_sp/n_r.png"]').parent('a[href*="/friend/index.php"]')
+	var quitCount = Math.floor(Math.random()*30+10);
+	
+	//else if(hasData(next)){
 
     //}
-    else if(hasData(other) && window.location.pathname == "/friend/list.php"){
+    if(hasData(other) && window.location.pathname == "/friend/list.php"){
+    	if(hits>quitCount){
+    		setFriendsData(0);
+    		done();
+    	}
    	 	other[0].click();
     } else if (hasData(allMyFriends) && window.location.pathname == "/friend/list.php") {
-        allMyFriends[0].click();
+   		if(hits>quitCount){
+    		setFriendsData(0);
+    		done();
+    	}
+    	var index = Math.floor( Math.random()*allMyFriends.length);
+        allMyFriends[index].click();
     } else if (hasData(friendsList)) {
-   var index = Math.floor( Math.random()*friendsList.length)
-        friendsList[0].click();
+   		var index = Math.floor( Math.random()*friendsList.length);
+        friendsList[index].click();
     } else {
         done();
         goHome();
     }
-
+ }
 }
 
 //
