@@ -26,7 +26,7 @@ function doneEvent(){
 //choose next activity
 function chooseNext() {
     //choose a random task.
-    taskList = ["friend", "recommend", "event", "social", "rest"];
+    taskList = ["friend", "recommend", "event", "social", "rest", "gohome"];
 
     //chose next task, RANDOMLY!
     var next = Math.floor((Math.random() * taskList.length));
@@ -163,21 +163,6 @@ function observatoryEvent(lastHelped) {
 	            goHome();
 	        }
         }
-    } else if (window.location.pathname == "/event/observatory/raid/end.php") {
-        var top = $('a[href*="/event/observatory/?"]');
-
-        //missed the raid
-        var hasHelp = $('a[href*="/event/observatory/raid/index.php"]');
-
-        if (hasData(hasHelp)) {
-            hasHelp[0].click();
-
-        } else if (hasData(top)) {
-            top[0].click();
-        } else {
-            goHome();
-        }
-
     } else if (window.location.pathname == "/event/observatory/raid/detail.php" || window.location.pathname == "/event/observatory/raid/end.php") {
         //raid detail
         //either help page or attack page
@@ -210,7 +195,10 @@ function observatoryEvent(lastHelped) {
             goHome();
         }
 
-    } else if (window.location.pathname.indexOf("/event/observatory/quest/") >= 0) {
+    } else if(window.location.pathname == "/event/observatory/raid/no_life.php"){
+        doneEvent();
+        goHome();
+    }else if (window.location.pathname.indexOf("/event/observatory/quest/") >= 0) {
         var doneHere = false;
         if (lastHelped + 3 * 60 * 1000 < now ) {
             var hasHelp = $('a[href*="/event/observatory/raid/index.php"]');
@@ -690,6 +678,9 @@ function letsGo() {
                         letsGoFriend();
                     } else if (items.task == "rest") {
                         letsNap();
+                    } else if (items.task == "gohome") {
+                        goHome();
+                        done();
                     } else {
 
                         //must be done or someones messing with us
