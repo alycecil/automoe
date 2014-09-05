@@ -183,9 +183,13 @@ function observatoryEvent(lastHelped) {
                 hasAttack[0].click();
             } else {
                 //maybe check stamina
-                
-                doneEvent();
-                goHome();
+                if (hasData(hasHelp)) {
+                	doneEvent();
+            		hasHelp[0].click();
+       			}else{
+                	doneEvent();
+                	goHome();
+                }
             }
         } else if (hasData(help)) {
             help[0].click();
@@ -265,116 +269,12 @@ function observatoryEvent(lastHelped) {
     //wait ~30seconds and gohome and kill as we failed to do anything
 }
 
-//
-//summer 2014 event, actual run event
-//is a list of check page, do actions by whats there 
-//
-function summer2014Do() {
-
-    if (window.location.pathname == "/event/summer2014/entry.php") {
-        var startFish = $('a[href*="/event/summer2014/goldfish"]');
-        var startCourage = $('a[href*="/event/summer2014/courage"]');
-
-        var whatEvent = Math.floor(Math.random() * 20);
-        if (whatEvent == 0 && hasData(startFish)) {
-            startFish[0].click();
-        } else if (whatEvent > 0 && hasData(startCourage)) {
-            startCourage[0].click();
-        } else {
-            var backTop = $('a[href*="/event/summer2014/"]:contains("Event Top")');
-
-            if (hasData(backTop)) {
-                backTop[0].click();
-            } else {
-                done();
-                goHome();
-            }
-        }
-    } else if (window.location.pathname == "/event/summer2014/courage/") {
-        var c_continue = $('a[href*="/event/summer2014/courage/conf.php"]')
-
-        if (hasData(c_continue)) {
-            c_continue[0].click();
-        } else {
-            var backTop = $('a[href*="/event/summer2014/"]:contains("Event Top")');
-
-            if (hasData(backTop)) {
-                backTop[0].click();
-            } else {
-                done();
-                goHome();
-            }
-        }
-    } else if (window.location.pathname == "/event/summer2014/courage/end.php" ||
-        window.location.pathname == "/event/summer2014/courage/end_ghost.php") {
-        var direction = $('a[href*="/event/summer2014/courage/conf.php"]');
-        var conf_done = $('a[href*="/event/summer2014/courage/conf_end.php"]');
-
-        if (hasData(conf_done)) {
-            conf_done[0].click();
-        } else if (hasData(direction)) {
-            direction[Math.floor(Math.random() * direction.length)].click();
-        } else {
-            var backTop = $('a[href*="/event/summer2014/"]:contains("Event Top")');
-
-            if (hasData(backTop)) {
-                backTop[0].click();
-            } else {
-                done();
-                goHome();
-            }
-        }
-    } else if (window.location.pathname == "/event/summer2014/courage/end_game.php") {
-        var backTop = $('a[href*="/event/summer2014/"]:contains("Event Top")');
-
-        if (hasData(backTop)) {
-            backTop[0].click();
-        } else {
-            done();
-            goHome();
-        }
-    } else {
-        //var top = $('a.event_button:contains("To Event Top")');
-
-
-        var entryFromHome = $('a[href*="/event/summer2014/index.php"]')
-        var entryFromRoot = $('a[href*="/event/summer2014/entry.php"]');
-        //[0].click()
-        var fishContinue = $('a[href*="/event/summer2014/goldfish/conf.php"]');
-        var fishDone = $('a[href*="/event/summer2014/goldfish/conf_end.php"]'); //[0].click()
-        var levelUp = $('a.event_button:contains("Level Up")');
-        var notAvailableYet = $('a.event_button:contains("Recover Stamina")');
-
-        if (hasData(notAvailableYet)) {
-            //end case is when im out of energy and i get to this page
-            done();
-            var data = {};
-            data['timeOutSummer' + prefix] = new Date().getTime();
-
-            chrome.storage.local.set(data);
-            goHome();
-        } else if (hasData(fishDone)) {
-            done();
-            fishDone[0].click();
-        } else if (hasData(levelUp)) {
-            levelUp[0].click();
-        } else if (hasData(fishContinue)) {
-            fishContinue[0].click();
-        } else if (hasData(entryFromRoot)) {
-            entryFromRoot[0].click();
-        } else if (hasData(entryFromHome)) {
-            entryFromHome[0].click();
-        } else {
-            goHome();
-        }
-
-    }
-}
 
 //
 // Time Check, Only run the event every so often.
 //
 function summer2014() {
+	var doEvent = true;
     //add time out check,
     //at most once every 5-10 minutes
     chrome.storage.local.get(['timeOutSummer' + prefix, 'lastHelped' + prefix], function(data) {
@@ -382,35 +282,35 @@ function summer2014() {
             var now = new Date().getTime();
             var delta = now - data['timeOutSummer' + prefix];
 
-            //every ~9-24 minutes (~16minutes)
-            var nextTime = 60 * Math.floor((Math.random() * 15000) + 9000);
+            //every ~3-24 minutes 
+            var nextTime = 60 * Math.floor((Math.random() * 21000) + 3000);
             if (delta > nextTime) {
 
                 data['timeOutSummer' + prefix] = 0;
 
                 chrome.storage.local.set(data);
 
-var value = 0;
-if(data['lastHelped' + prefix]){
-value = data['lastHelped' + prefix];
-}
-                //run actual event
-                observatoryEvent(value);
+				doEvent = true;
             } else {
-
-                //give up
-                done();
-                goHome();
+				doEvent = false;
             }
         } else {
-        
-        var value = 0;
-if(data['lastHelped' + prefix]){
-value = data['lastHelped' + prefix];
-}
-            //never done anything before
-            observatoryEvent(value);
+        	doEvent = true;
         }
+
+		if(doEvent){
+        	var value = 0;
+			if(data['lastHelped' + prefix]){
+				value = data['lastHelped' + prefix];
+
+           		//never done anything before
+            	observatoryEvent(value);
+			}else{
+				//give up
+                done();
+                goHome();
+			}
+		}
     });
 }
 
