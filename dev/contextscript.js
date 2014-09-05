@@ -282,8 +282,8 @@ function summer2014() {
             var now = new Date().getTime();
             var delta = now - data['timeOutSummer' + prefix];
 
-            //every ~3-24 minutes 
-            var nextTime = 60 * Math.floor((Math.random() * 21000) + 3000);
+            //every ~5-26 minutes 
+            var nextTime = 60 * Math.floor((Math.random() * 21000) + 5000);
             if (delta > nextTime) {
 
                 data['timeOutSummer' + prefix] = 0;
@@ -302,14 +302,14 @@ function summer2014() {
         	var value = 0;
 			if(data['lastHelped' + prefix]){
 				value = data['lastHelped' + prefix];
-
-           		//never done anything before
-            	observatoryEvent(value);
-			}else{
-				//give up
-                done();
-                goHome();
 			}
+			
+			//never done anything before
+            observatoryEvent(value);
+		}else{
+			//give up
+            done();
+            goHome();
 		}
     });
 }
