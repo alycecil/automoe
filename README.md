@@ -14,8 +14,11 @@ Download the zip from https://github.com/wcecil/automoe/archive/master.zip, unzi
 Go to Chrome and open the page chrome://extensions 
 
 Check 'Developer mode'
+
 Click 'Load unpacked extension' 
+
 Navigate to [DESKTOP]/automoe/dev
+
 Press Select
 
 Now follow the instructions in http://pastebin.com/BeLg937f / mcc_browser_play_for_ios_devices___unrooted_androids.txt
