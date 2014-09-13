@@ -3,7 +3,7 @@
   "description": "Manage My Moe",
   "version": "2.0",
   "permissions": [
-    "storage","activeTab", "tabs", "http://us-moe-app.amz-aws.jp/*", "http://*.amz-aws.jp/*"
+    "webRequest","storage","activeTab", "tabs", "http://us-moe-app.amz-aws.jp/*", "http://*.amz-aws.jp/*"
   ],
   "background": {
     "scripts": ["background.js"],
