@@ -40,17 +40,23 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
         }
 });
 
-
 //add a listener for getting the tabId.      
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) 
 {   
 
     if(request.action== 'getTabId')
     {
-
-        // Make what you want
+ 		chrome.tabs.sendRequest(sender.tab.id , { action: "response" ,'tabid': sender.tab.id });
+ 		
+ 		// Make what you want
         chrome.tabs.getSelected(null, function(tabs) {
             chrome.tabs.sendRequest(tabs.id, { action: "response" , 'tabid':tabs.id});
         });     
     }
+});
+
+
+chrome.webRequest.onErrorOccurred.addListener(function(details){
+
+	chrome.tabs.reload(details.tabId);
 });

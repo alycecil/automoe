@@ -273,7 +273,7 @@ function observatoryEvent(lastHelped) {
 //
 // Time Check, Only run the event every so often.
 //
-function summer2014() {
+function eventRoot() {
 	var doEvent = true;
     //add time out check,
     //at most once every 5-10 minutes
@@ -573,7 +573,7 @@ function letsGo() {
                     } else if (items.task == "social") {
                         socialize();
                     } else if (items.task == "event") {
-                        summer2014();
+                        eventRoot();
                     } else if (items.task == "friend") {
                         letsGoFriend();
                     } else if (items.task == "rest") {
@@ -649,7 +649,7 @@ function getStats() {
 
 // Variables!
 var time = 0;
-var prefix = "1"; //"_none"; // will be the tabId
+var prefix = "_none"; // will be the tabId
 var postedTimes = false;
 var timeOutNext = 0;
 var i = 0;
