@@ -6,7 +6,7 @@
     "webRequest","storage","activeTab", "tabs", "http://us-moe-app.amz-aws.jp/*", "http://*.amz-aws.jp/*"
   ],
   "background": {
-    "scripts": ["background.js"],
+    "page": "background.html",
     "persistent": true
   },
   "browser_action": {

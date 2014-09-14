@@ -589,10 +589,10 @@ function letsGo() {
 					} else if (items.task == "gohome") {
 						goHome();
 						done();
-					} else if (items.task == "stats") {
-						getStats();
+					} //else if (items.task == "stats") {
+					//	getStats();
 						
-					}
+					//}
 					else {
 
 						// must be done or someones messing with us
@@ -620,24 +620,25 @@ function getStats() {
 	if (window.location.pathname == "/room/status.php") {
 		var attrValues = $('span[style*="color:#e70e55"]');
 
-		var len = attrValues.length / 2;
 		var i = 0;
-
 		var data = {};
-		while (i < len) {
+		while (i < attrValues.length ) {
 			var aName = attrValues[i].innerHTML;
 			var aValue = parseInt(attrValues[i + 1].innerHTML);
 
 			i += 2;
 
-			aName = aName.substring(2, aName.length - 2);
+			aName = aName.trim();
+			aName = aName.substring(1, aName.length - 1);
 			data[aName] = aValue;
 		}
 
-		var data = {};
-		data['moeStats' + prefix] = data
+		var name = $('div.obi4').html();
+		
+		var dataStore = {};
+		dataStore['moeStats:'+name] = data
 
-		chrome.storage.local.set(data);
+		chrome.storage.local.set(dataStore);
 
 		done();
 		goHome();
