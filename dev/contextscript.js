@@ -121,8 +121,16 @@ function observatoryEvent(lastHelped) {
 		lastHelped = 0;
 	}
 	var now = new Date().getTime();
+	var askForHelp = $('a[href*="/event/observatory/raid/help_conf.php?"]');
+	if (hasData(askForHelp)) {
+		hasHelp[0].click();
+		return;
+	} 
 
-	if (window.location.pathname == "/event/observatory/index.php"
+	if(window.location.pathname == "/event/observatory/quest/no_life.php"){
+		done();
+		goHome();
+	}else if (window.location.pathname == "/event/observatory/index.php"
 			|| window.location.pathname == "/event/observatory/") {
 		var doneHere = false;
 		if (lastHelped + 3 * 60 * 1000 < now) {
@@ -168,7 +176,7 @@ function observatoryEvent(lastHelped) {
 		var hasAttack = $('a[href*="/event/observatory/raid/atk_conf.php"]:contains("Clean"):contains("x1")');
 		// if no help, go back
 		var hasHelp = $('a[href*="/event/observatory/raid/index.php"]');
-		var askForHelp = $('a[href*="/event/observatory/raid/help_conf.php?"]');
+		
 		var life = $(
 				$('img[src*="/img/event/observatory/sp/battle_gauge_off.png"]')
 						.parent()[0]).children().length - 1;
@@ -176,7 +184,6 @@ function observatoryEvent(lastHelped) {
 
 		}
 		if (hasData(askForHelp)) {
-			doneEvent();
 			hasHelp[0].click();
 		} else if (hasData(hasAttack)) {
 			// if has health, other wise done()
