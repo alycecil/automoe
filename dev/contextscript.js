@@ -123,7 +123,7 @@ function observatoryEvent(lastHelped) {
 	var now = new Date().getTime();
 	var askForHelp = $('a[href*="/event/observatory/raid/help_conf.php?"]');
 	if (hasData(askForHelp)) {
-		hasHelp[0].click();
+		askForHelp[0].click();
 		return;
 	} 
 
@@ -184,7 +184,7 @@ function observatoryEvent(lastHelped) {
 
 		}
 		if (hasData(askForHelp)) {
-			hasHelp[0].click();
+			askForHelp[0].click();
 		} else if (hasData(hasAttack)) {
 			// if has health, other wise done()
 
@@ -195,7 +195,7 @@ function observatoryEvent(lastHelped) {
 				// maybe check stamina
 				if (hasData(askForHelp)) {
 					doneEvent();
-					hasHelp[0].click();
+					askForHelp[0].click();
 				} else {
 					doneEvent();
 					goHome();
