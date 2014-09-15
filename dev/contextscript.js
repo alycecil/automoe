@@ -26,7 +26,7 @@ function doneEvent() {
 // choose next activity
 function chooseNext() {
 	// choose a random task.
-	taskList = [ "friend", "recommend", "event", "social", "rest", "gohome", "stats" ];
+	taskList = [ "friend", "recommend", "event", "social", "rest", "gohome"/*,"stats"*/ ];
 
 	// chose next task, RANDOMLY!
 	var next = Math.floor((Math.random() * taskList.length));
@@ -125,12 +125,12 @@ function observatoryEvent(lastHelped) {
 	if (hasData(askForHelp)) {
 		askForHelp[0].click();
 		return;
-	} 
+	}
 
-	if(window.location.pathname == "/event/observatory/quest/no_life.php"){
+	if (window.location.pathname == "/event/observatory/quest/no_life.php") {
 		done();
 		goHome();
-	}else if (window.location.pathname == "/event/observatory/index.php"
+	} else if (window.location.pathname == "/event/observatory/index.php"
 			|| window.location.pathname == "/event/observatory/") {
 		var doneHere = false;
 		if (lastHelped + 3 * 60 * 1000 < now) {
@@ -176,7 +176,7 @@ function observatoryEvent(lastHelped) {
 		var hasAttack = $('a[href*="/event/observatory/raid/atk_conf.php"]:contains("Clean"):contains("x1")');
 		// if no help, go back
 		var hasHelp = $('a[href*="/event/observatory/raid/index.php"]');
-		
+
 		var life = $(
 				$('img[src*="/img/event/observatory/sp/battle_gauge_off.png"]')
 						.parent()[0]).children().length - 1;
@@ -466,6 +466,44 @@ function checkMyGirl() {
 		var note = $('a:contains("Read the note")');
 		var nextMoe = $('a[href*="/android/change.php"]');
 
+		var timeTilSleep = $('a.skeleton:contains("Time remaining")');
+
+		if (hasData(timeTilSleep)) {
+			var shorten = timeTilSleep.html();
+
+			shorten = shorten.match(/Sleep \d*h*\d+m*/);
+
+			if (hasData(shorten)) {
+
+				var time = shorten[0].substring(6);
+
+				if (time.indexOf('h') < 0) {
+					// go to sleep if under 30mins
+
+					var timeMins = time.match(/\d*/);
+
+					if (hasData(timeMins)) {
+						var mins = timeMins[0];
+
+						mins = parseInt(mins, 10);
+
+						if (mins < 45) {
+							console.log('goto sleep');
+							$('a.skeleton:contains("Time remaining")').click();
+
+							var putToSleep = $('a.button1:contains("Put to sleep")[href*="/sleep/conf.php"]');
+
+							if (hasData(putToSleep)) {
+								putToSleep[0].click();
+							}
+						}
+					}
+
+				}
+
+			}
+		}
+
 		if (hasData(cheer)) {
 			cheer[0].click();
 			return true;
@@ -596,11 +634,10 @@ function letsGo() {
 					} else if (items.task == "gohome") {
 						goHome();
 						done();
-					} //else if (items.task == "stats") {
-					//	getStats();
-						
-					//}
-					else {
+					} else if (items.task == "stats") {
+						getStats();
+
+					} else {
 
 						// must be done or someones messing with us
 						chooseNext();
@@ -621,6 +658,53 @@ function letsGo() {
 	}
 }
 
+
+
+//
+//Time Check, Only run the event every so often.
+//
+function getStatsRoot() {
+	var checkStats = true;
+	var dataName = 'timeOutStats';
+	// add time out check,
+	// at most once every 5-10 minutes
+	chrome.storage.local.get(
+			[  dataName+ prefix ],
+			function(data) {
+				if (data[dataName + prefix]
+						&& data[dataName + prefix] > 0) {
+					var now = new Date().getTime();
+					var delta = now - data[dataName + prefix];
+
+					// every ~5-26 minutes
+					var nextTime = 60 * Math
+							.floor((Math.random() * 21000) + 5000);
+					if (delta > nextTime) {
+
+						data[dataName + prefix] = 0;
+
+						chrome.storage.local.set(data);
+
+						checkStats = true;
+					} else {
+						checkStats = false;
+					}
+				} else {
+					checkStats = true;
+				}
+
+				if (checkStats) {
+					
+
+					// never done anything before
+					observatoryEvent(value);
+				} else {
+					// give up
+					done();
+					goHome();
+				}
+			});
+}
 // Not currently used but gets the active girl's stats
 function getStats() {
 
@@ -629,7 +713,7 @@ function getStats() {
 
 		var i = 0;
 		var data = {};
-		while (i < attrValues.length ) {
+		while (i < attrValues.length) {
 			var aName = attrValues[i].innerHTML;
 			var aValue = parseInt(attrValues[i + 1].innerHTML);
 
@@ -641,9 +725,9 @@ function getStats() {
 		}
 
 		var name = $('div.obi4').html();
-		
+
 		var dataStore = {};
-		dataStore['moeStats:'+name] = data
+		dataStore['moeStats:' + name] = data
 
 		chrome.storage.local.set(dataStore);
 
