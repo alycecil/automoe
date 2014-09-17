@@ -26,7 +26,7 @@ function doneEvent() {
 // choose next activity
 function chooseNext() {
 	// choose a random task.
-	taskList = [ "friend", "recommend", "event", "social", "rest", "gohome"/*,"stats"*/ ];
+	taskList = [ "friend", "recommend", "event", "social", "rest", "gohome"/* ,"stats" */];
 
 	// chose next task, RANDOMLY!
 	var next = Math.floor((Math.random() * taskList.length));
@@ -115,168 +115,145 @@ function letsGoRecomend() {
 	}
 }
 
-function observatoryEvent(lastHelped) {
+function eventSweetPotato(lastHelped) {
+	var eventRoot = $('a[href*="/event/sweetpotato/index.php"]');
 
-	if (lastHelped == null) {
-		lastHelped = 0;
-	}
-	var now = new Date().getTime();
-	var askForHelp = $('a[href*="/event/observatory/raid/help_conf.php?"]');
-	if (hasData(askForHelp)) {
-		askForHelp[0].click();
-		return;
+	var life = $('img[src*="/img/event/sweetpotato/sp/gauge_red.png?nocache=1"]');
+
+	if (hasData(life)) {
+		life = parseInt(life.attr('width'));
+	} else {
+		life = null;
+
+		if (hasData(eventRoot)) {
+			eventRoot[0].click();
+			return;
+		}
 	}
 
-	if (window.location.pathname == "/event/observatory/quest/no_life.php") {
+	if (life != null && life <= 3) {
 		done();
-		goHome();
-	} else if (window.location.pathname == "/event/observatory/index.php"
-			|| window.location.pathname == "/event/observatory/") {
-		var doneHere = false;
-		if (lastHelped + 3 * 60 * 1000 < now) {
-			var hasHelp = $('a[href*="/event/observatory/raid/index.php"]');
-
-			if (hasData(hasHelp)) {
-				// set lastHelpered to now and help
-				var data = {};
-				data['lastHelped' + prefix] = now;
-				chrome.storage.local.set(data);
-
-				hasHelp[0].click();
-				doneHere = true;
-			}
-		}
-
-		if (!doneHere) {
-			// other root triggers
-			// start hunt
-			var start = $('a[href*="/event/observatory/quest/?"]');
-			if (hasData(start)) {
-				start[0].click();
-			}
-		}
-
-	} else if (window.location.pathname == "/event/observatory/raid/index.php") {
-		var helpsomeone = $('a[href*="/event/observatory/raid/detail.php?"]:not(:contains("Broom")):not(:contains("Tired state"))');
-		if (hasData(helpsomeone)) {
-			helpsomeone[0].click();
-		} else {
-			var top = $('a[href*="/event/observatory/?"]');
-			if (hasData(top)) {
-				top[0].click();
-			} else {
-				goHome();
-			}
-		}
-	} else if (window.location.pathname == "/event/observatory/raid/detail.php"
-			|| window.location.pathname == "/event/observatory/raid/end.php") {
-		// raid detail
-		// either help page or attack page
-		var help = $('a[href*="/event/observatory/raid/atk_conf.php"]:contains("Help")');
-		var hasAttack = $('a[href*="/event/observatory/raid/atk_conf.php"]:contains("Clean"):contains("x1")');
-		// if no help, go back
-		var hasHelp = $('a[href*="/event/observatory/raid/index.php"]');
-
-		var life = $(
-				$('img[src*="/img/event/observatory/sp/battle_gauge_off.png"]')
-						.parent()[0]).children().length - 1;
-		if (life == 0) {
-
-		}
-		if (hasData(askForHelp)) {
-			askForHelp[0].click();
-		} else if (hasData(hasAttack)) {
-			// if has health, other wise done()
-
-			if (life > 0) {
-
-				hasAttack[0].click();
-			} else {
-				// maybe check stamina
-				if (hasData(askForHelp)) {
-					doneEvent();
-					askForHelp[0].click();
-				} else {
-					doneEvent();
-					goHome();
-				}
-			}
-		} else if (hasData(help)) {
-			help[0].click();
-		} else if (hasData(hasHelp)) {
-			hasHelp[0].click();
-		} else {
-			goHome();
-		}
-
-	} else if (window.location.pathname == "/event/observatory/raid/no_life.php") {
 		doneEvent();
 		goHome();
-	} else if (window.location.pathname.indexOf("/event/observatory/quest/") >= 0) {
-		var doneHere = false;
-		if (lastHelped + 3 * 60 * 1000 < now) {
-			var hasHelp = $('a[href*="/event/observatory/raid/index.php"]');
+	}
 
-			if (hasData(hasHelp)) {
-				// set lastHelpered to now and help
-				// var now = new Date().getTime();
-				var data = {};
-				data['lastHelped' + prefix] = now;
-				chrome.storage.local.set(data);
+	var now = new Date().getTime();
 
-				hasHelp[0].click();
-				doneHere = true;
-			}
+	// root
+	if (window.location.pathname == "/event/sweetpotato/index.php") {
+		var startQuest = $('a[href*="/event/sweetpotato/quest/?"]');
+		var bakePotatoes = $('a[href*="/event/sweetpotato/battle/?"]');
+
+		if (lastHelped + 1 * 60 * 60 * 1000 > now && hasData(bakePotatoes)) {
+			// set lastHelpered to now and help
+			var data = {};
+			data['lastHelped' + prefix] = now;
+			chrome.storage.local.set(data);
+
+			bakePotatoes[0].click();
+		} else if (hasData(startQuest)) {
+			startQuest[0].click();
+		} else {
+			goHome();
 		}
 
-		if (!doneHere) {
+	} else if (window.location.pathname == "/event/sweetpotato/quest/"
+			|| window.location.pathname == "/event/sweetpotato/quest/end.php"
+			|| window.location.pathname == "/event/sweetpotato/quest/next.php") {
+		var pickUp = $('a[href*="/event/sweetpotato/quest/conf.php"]');
+		var nextQuest = $('a[href*="/event/sweetpotato/quest/next_conf.php"]');
 
-			var top = $('a[href*="/event/observatory/?"]');
+		if (hasData(pickUp)) {
+			pickUp[0].click();
+		} else if (hasData(nextQuest)) {
+			nextQuest[0].click();
+		} else {
+			goHome();
+		}
+	} else if (window.location.pathname == "/event/sweetpotato/battle/") {
+		var owned = $('td:contains("Potato"):contains("Owned")');
+		if (hasData(owned)) {
+			owned = owned.html();
+			owned = owned.substring(owned.indexOf("Owned") + 7);
+			owned = owned.substring(0, owned.indexOf('<br>'));
+			owned = parseInt(owned);
 
-			// maybe check stamina by % redbar
-			// var encounter =
-			// $('a[href*="/event/observatory/raid/detail.php?"]').find(".encount");
+			if (owned > 0) {
+				var bake = $('a[href*="/event/sweetpotato/battle/create_conf.php"]');
 
-			// if i have a raid todo
-			var helpsomeone = $('a[href*="/event/observatory/raid/detail.php?"]:not(:contains("Broom")):not(:contains("Tired state"))');
+				if (hasData(bake)) {
+					bake[0].click();
+				} else {
+					goHome();
+				}
+			} else {
+				goHome();
+			}
+		} else {
+			goHome();
+		}
+	} else if (window.location.pathname == "/event/sweetpotato/battle/battle.php") {
+		var buttons = $('a[href*="event/sweetpotato/battle/check_conf.php?"]');
 
-			// keep going
-			var keepGoing = $('a[href*="/event/observatory/quest/conf.php"]');
+		if (hasData(buttons)) {
+			var which = Math.floor(buttons.length * Math.random());
 
-			if (hasData(helpsomeone)) {
-				helpsomeone[0].click();
-			} else if (hasData(keepGoing)) {
-				keepGoing[0].click();
-			} else if (hasData(top)) {
-				top[0].click();
+			buttons[which].click();
+		} else {
+			goHome();
+		}
+	} else if (window.location.pathname == "/event/sweetpotato/battle/result.php") {
+		var cookMore = $('a[href*="/event/sweetpotato/battle/select_conf.php"]');
+
+		if (hasData(cookMore)) {
+			var which = Math.floor(cookMore.length * Math.random());
+
+			cookMore[which].click();
+		} else {
+			goHome();
+		}
+	} else if (window.location.pathname == "/event/sweetpotato/battle/select.php") {
+		var wonSoFar = $('td:contains("Medals won:")');
+
+		if (hasData(wonSoFar)) {
+			wonSoFar = wonSoFar.html();
+			wonSoFar = wonSoFar
+					.substring(wonSoFar.indexOf("Medals won: ") + 12);
+			wonSoFar = wonSoFar.substring(0, wonSoFar.indexOf('<br>'));
+			wonSoFar = parseInt(wonSoFar);
+
+			var giveup = $('a[href*="/event/sweetpotato/battle/end_conf.php?"]');
+			var cookMore = $('a[href*="event/sweetpotato/battle/create_conf.php"]');
+			if (wonSoFar <= 100 && hasData(cookMore)) {
+				cookMore[0].click();
+			} else if (hasData(cookMore) && Math.floor(3 * Math.random()) == 0) {
+				// 1 in three of going again
+				cookMore[0].click();
+			} else if (hasData(giveup)) {
+				giveup[0].click();
 			} else {
 				goHome();
 			}
 
+		} else {
+			// auto give up
+			var giveup = $('a[href*="/event/sweetpotato/battle/end_conf.php?"]');
+
+			if (hasData(giveup)) {
+				giveup[0].click();
+			} else {
+				goHome();
+			}
 		}
 
-	} else if (window.location.pathname == "/event/observatory/raid/help_end.php") {
-		var top = $('a[href*="/event/observatory/?"]');
-		if (hasData(top)) {
-			top[0].click();
+	}
+	else {
+		if (hasData(eventRoot)) {
+			eventRoot[0].click();
 		} else {
 			goHome();
 		}
-
-	} else {
-		// go to event
-		var top = $('a[href*="/event/observatory/?"]');
-		var gotoevent = $('a[href*="/event/observatory/story/index.php"]')
-		if (hasData(top)) {
-			top[0].click();
-		} else if (hasData(gotoevent)) {
-			gotoevent[0].click();
-		} else {
-			goHome();
-		}
-	} // else
-
-	// wait ~30seconds and gohome and kill as we failed to do anything
+	}
 }
 
 //
@@ -318,7 +295,7 @@ function eventRoot() {
 					}
 
 					// never done anything before
-					observatoryEvent(value);
+					eventSweetPotato(value);
 				} else {
 					// give up
 					done();
@@ -454,9 +431,66 @@ function actualFriendsDo(hits) {
 //
 // check up on my girls, occasionally go to my next moe
 //
-function checkMyGirl() {
+function checkMyGirl(data) {
 	if (window.location.pathname == "/room/index.php") {
 		console.log("Check out my girl");
+
+		var now = new Date().getTime();
+		var talkToMe = false;
+		if (data['lastTalked' + prefix]) {
+			if (data['lastTalked' + prefix] + 60 * 61 * 1000 > now) {
+				// if an hours passed
+				talkToMe = true;
+			}
+		} else {
+			// ive never talked in this run
+			talkToMe = true;
+		}
+
+		if (talkToMe) {
+			// var comBtn = $('a#android_menu_com_btn');
+			// if (hasData(comBtn)) {
+			// comBtn.children().click();
+			// //comBtn[0].click();
+			//
+			// }
+			// var callMe = $('a#callandroid');
+			//
+			// if (hasData(callMe)) {
+			// callMe[0].click();
+			//
+			// }
+			// var goBtn = $('span.button1:contains("GO!")');
+			//
+			// if (hasData(goBtn)) {
+			// goBtn[0].click();
+			//
+			// }
+			//
+			// var backBtn = $('a.button1[onclick*="loseTalk"]');
+			// var busy = $('td.txt_w:contains("busy")');
+			//
+			// if (hasData(backBtn)) {
+			// backBtn[0].click();
+			//
+			// var items = {};
+			// items['lastTalked' + prefix] = now;
+			// chrome.storage.local.set(items);
+			// goHome();
+			// }else if(hasData(busy)){
+			// var items = {};
+			// items['lastTalked' + prefix] = now;
+			// chrome.storage.local.set(items);
+			// goHome();
+			// }
+			// else {
+			//
+			// setTimeout(1000, checkMyGirl);
+			// }
+
+		}
+
+		// other triggers
 		var warn = $('a.button1:contains("Warn")');
 		var cheer = $('a.button1:contains("Cheer")');
 		var reco = $('a.button1:contains("Remove Recommendation")');
@@ -487,7 +521,7 @@ function checkMyGirl() {
 
 						mins = parseInt(mins, 10);
 
-						if (mins < 45) {
+						if (mins < 39) {
 							console.log('goto sleep');
 							$('a.skeleton:contains("Time remaining")').click();
 
@@ -613,44 +647,47 @@ function letsNap() {
 //
 function letsGo() {
 	try {
-		chrome.storage.local.get('task' + prefix, function(items) {
-			if (items['task' + prefix]) {
-				if (checkMyGirl()) {
-					console.log("girl cared for");
-				} else {
-					console.log(items['task' + prefix] + " , " + prefix);
-					items.task = items['task' + prefix];
-					if (items.task == "recommend") {
-						// "recommend"
-						letsGoRecomend();
-					} else if (items.task == "social") {
-						socialize();
-					} else if (items.task == "event") {
-						eventRoot();
-					} else if (items.task == "friend") {
-						letsGoFriend();
-					} else if (items.task == "rest") {
-						letsNap();
-					} else if (items.task == "gohome") {
-						goHome();
-						done();
-					} else if (items.task == "stats") {
-						getStats();
+		chrome.storage.local.get([ 'task' + prefix, 'lastTalked' + prefix ],
+				function(items) {
+					if (items['task' + prefix]) {
+						if (checkMyGirl(items)) {
+							console.log("girl cared for");
+						} else {
+							console
+									.log(items['task' + prefix] + " , "
+											+ prefix);
+							items.task = items['task' + prefix];
+							if (items.task == "recommend") {
+								// "recommend"
+								letsGoRecomend();
+							} else if (items.task == "social") {
+								socialize();
+							} else if (items.task == "event") {
+								eventRoot();
+							} else if (items.task == "friend") {
+								letsGoFriend();
+							} else if (items.task == "rest") {
+								letsNap();
+							} else if (items.task == "gohome") {
+								goHome();
+								done();
+							} else if (items.task == "stats") {
+								getStats();
 
+							} else {
+
+								// must be done or someones messing with us
+								chooseNext();
+								letsGo();
+
+							}
+						}
 					} else {
-
-						// must be done or someones messing with us
+						// never ran before
 						chooseNext();
 						letsGo();
-
 					}
-				}
-			} else {
-				// never ran before
-				chooseNext();
-				letsGo();
-			}
-		});
+				});
 	} catch (e) {
 		// some crazy exception, lets reset ourself
 		chooseNext();
@@ -658,52 +695,45 @@ function letsGo() {
 	}
 }
 
-
-
 //
-//Time Check, Only run the event every so often.
+// Time Check, Only run the event every so often.
 //
 function getStatsRoot() {
 	var checkStats = true;
 	var dataName = 'timeOutStats';
 	// add time out check,
 	// at most once every 5-10 minutes
-	chrome.storage.local.get(
-			[  dataName+ prefix ],
-			function(data) {
-				if (data[dataName + prefix]
-						&& data[dataName + prefix] > 0) {
-					var now = new Date().getTime();
-					var delta = now - data[dataName + prefix];
+	chrome.storage.local.get([ dataName + prefix ], function(data) {
+		if (data[dataName + prefix] && data[dataName + prefix] > 0) {
+			var now = new Date().getTime();
+			var delta = now - data[dataName + prefix];
 
-					// every ~5-26 minutes
-					var nextTime = 60 * Math
-							.floor((Math.random() * 21000) + 5000);
-					if (delta > nextTime) {
+			// every ~5-26 minutes
+			var nextTime = 60 * Math.floor((Math.random() * 21000) + 5000);
+			if (delta > nextTime) {
 
-						data[dataName + prefix] = 0;
+				data[dataName + prefix] = 0;
 
-						chrome.storage.local.set(data);
+				chrome.storage.local.set(data);
 
-						checkStats = true;
-					} else {
-						checkStats = false;
-					}
-				} else {
-					checkStats = true;
-				}
+				checkStats = true;
+			} else {
+				checkStats = false;
+			}
+		} else {
+			checkStats = true;
+		}
 
-				if (checkStats) {
-					
+		if (checkStats) {
 
-					// never done anything before
-					observatoryEvent(value);
-				} else {
-					// give up
-					done();
-					goHome();
-				}
-			});
+			// never done anything before
+			observatoryEvent(value);
+		} else {
+			// give up
+			done();
+			goHome();
+		}
+	});
 }
 // Not currently used but gets the active girl's stats
 function getStats() {
