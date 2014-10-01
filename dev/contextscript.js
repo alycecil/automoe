@@ -26,7 +26,12 @@ function doneEvent() {
 // choose next activity
 function chooseNext() {
 	// choose a random task.
-	taskList = [ "friend", "recommend", "event", "social", "rest", "gohome" /*, "stats" */];
+	taskList = [ // "friend", "recommend",
+	"event"//,//
+	// "social", "rest", "gohome"
+	/*
+	 * , "stats"
+	 */];
 
 	// chose next task, RANDOMLY!
 	var next = Math.floor((Math.random() * taskList.length));
@@ -115,10 +120,10 @@ function letsGoRecomend() {
 	}
 }
 
-function eventSweetPotato(lastHelped) {
-	var eventRoot = $('a[href*="/event/sweetpotato/index.php"]');
+function evenHandler(lastHelped) {
+	var eventRoot = $('a[href*="/event/"][href*="/index.php"]');
 
-	var life = $('img[src*="/img/event/sweetpotato/sp/gauge_red.png?nocache=1"]');
+	var life = $('img[src*="/img/event/"][src*="/sp/gauge_red.png?nocache=1"]');
 
 	if (hasData(life)) {
 		life = parseInt(life.attr('width'));
@@ -136,138 +141,317 @@ function eventSweetPotato(lastHelped) {
 		doneEvent();
 		goHome();
 	}
+	if (window.location.pathname.indexOf("/event/") == 0) {
 
-	var now = new Date().getTime();
-
-	// root
-	if (window.location.pathname == "/event/sweetpotato/index.php") {
-		var startQuest = $('a[href*="/event/sweetpotato/quest/?"]');
-		var bakePotatoes = $('a[href*="/event/sweetpotato/battle/?"]');
-
-		if (lastHelped + 1 * 60 * 60 * 1000 < now && hasData(bakePotatoes)) {
-			// set lastHelpered to now and help
-			var data = {};
-			data['lastHelped' + prefix] = now;
-			chrome.storage.local.set(data);
-
-			bakePotatoes[0].click();
-		} else 
-			if (hasData(startQuest)) {
-			startQuest[0].click();
-		} else {
-			goHome();
+		if (lastHelped == null) {
+			lastHelped = 0;
+		}
+		var now = new Date().getTime();
+		var askForHelp = $('a[href*="/event/"][href*="/raid/help_conf.php?"]');
+		if (hasData(askForHelp)) {
+			askForHelp[0].click();
+			return;
 		}
 
-	} else if (window.location.pathname == "/event/sweetpotato/quest/"
-			|| window.location.pathname == "/event/sweetpotato/quest/end.php"
-			|| window.location.pathname == "/event/sweetpotato/quest/next.php") {
-		var pickUp = $('a[href*="/event/sweetpotato/quest/conf.php"]');
-		var nextQuest = $('a[href*="/event/sweetpotato/quest/next_conf.php"]');
-
-		if (hasData(pickUp)) {
-			pickUp[0].click();
-		} else if (hasData(nextQuest)) {
-			nextQuest[0].click();
-		} else {
+		if (window.location.pathname.indexOf("/quest/no_life.php") > 0) {
+			done();
 			goHome();
-		}
-	} else if (window.location.pathname == "/event/sweetpotato/battle/") {
-		var owned = $('td:contains("Potato"):contains("Owned")');
-		if (hasData(owned)) {
-			owned = owned.html();
-			owned = owned.substring(owned.indexOf("Owned") + 7);
-			owned = owned.substring(0, owned.indexOf('<br>'));
-			owned = parseInt(owned);
+		} else if (window.location.pathname.indexOf("/raid/index.php") > 0) {
+			var helpsomeone = $('a[href*="/event/"][href*="/raid/detail.php?"]:not(:contains("Tired"))');
+			if (hasData(helpsomeone)) {
+				helpsomeone[0].click();
+			} else {
+				if (hasData(eventRoot)) {
+					var which = Math.floor(eventRoot.length * Math.random());
 
-			if (owned > 0) {
-				var bake = $('a[href*="/event/sweetpotato/battle/create_conf.php"]');
-
-				if (hasData(bake)) {
-					bake[0].click();
+					eventRoot[which].click();
 				} else {
 					goHome();
 				}
+			}
+		} else if (window.location.pathname.indexOf("/raid/detail.php") > 0
+				|| window.location.pathname.indexOf("/raid/end.php") > 0) {
+			// raid detail
+			// either help page or attack page
+			var help = $('a[href*="/event/"][href*="/raid/atk_conf.php"]:contains("Help")');
+			var hasAttack = $('a[href*="/event/"][href*="/raid/atk_conf.php"]:contains("x1")');
+			// if no help, go back
+			var hasHelp = $('a[href*="/event/"][href*="/raid/index.php"]');
+
+			var life = $(
+					$('img[src*="/img/event/"][src*="/sp/battle_gauge_off.png"]')
+							.parent()[0]).children().length - 1;
+			if (life < 0) {
+//if not found set to 1
+				life = 1;
+			}
+			if (hasData(askForHelp)) {
+				askForHelp[0].click();
+			} else if (hasData(hasAttack)) {
+				// if has health, other wise done()
+
+				if (life > 0) {
+
+					hasAttack[0].click();
+				} else {
+					// maybe check stamina
+					if (hasData(askForHelp)) {
+						doneEvent();
+						askForHelp[0].click();
+					} else {
+						doneEvent();
+						goHome();
+					}
+				}
+			} else if (hasData(help)) {
+				help[0].click();
+			} else if (hasData(hasHelp)) {
+				hasHelp[0].click();
 			} else {
 				goHome();
 			}
-		} else {
+
+		} else if (window.location.pathname.indexOf("/raid/no_life.php") > 0) {
+			doneEvent();
 			goHome();
-		}
-	} else if (window.location.pathname == "/event/sweetpotato/battle/battle.php") {
-		//bright
-		var bright = $('div.bright');
-	
-		if(hasData(bright)){
-			bright.parent('a')[0].click()
-		}else{
-			var buttons = $('a[href*="event/sweetpotato/battle/check_conf.php?"]');
+		} else if (window.location.pathname.indexOf("/quest/") >= 0) {
+			var doneHere = false;
+			if (lastHelped + 3 * 60 * 1000 < now) {
+				var hasHelp = $('a[href*="/event/"][href*="/raid/index.php"]');
 
-			if (hasData(buttons)) {
-				var which = Math.floor(buttons.length * Math.random());
+				if (hasData(hasHelp)) {
+					// set lastHelpered to now and help
+					// var now = new Date().getTime();
+					var data = {};
+					data['lastHelped' + prefix] = now;
+					chrome.storage.local.set(data);
 
-				buttons[which].click();
-			} else {
-				goHome();
+					hasHelp[0].click();
+					doneHere = true;
+				}
 			}
-		}
-	} else if (window.location.pathname == "/event/sweetpotato/battle/result.php") {
-		var cookMore = $('a[href*="/event/sweetpotato/battle/select_conf.php"]');
 
-		if (hasData(cookMore)) {
-			var which = Math.floor(cookMore.length * Math.random());
+			if (!doneHere) {
 
-			cookMore[which].click();
-		} else {
-		var bright = $('div.bright')
-		if(hasData(bright)){
-		bright.before('a')[0].click();
-		}else{
-			goHome();
-		}
-		}
-	} else if (window.location.pathname == "/event/sweetpotato/battle/select.php") {
-		var wonSoFar = $('td:contains("Medals won:")');
+				// maybe check stamina by % redbar
+				// var encounter =
+				// $('a[href*="/event/"][href*="/raid/detail.php?"]').find(".encount");
 
-		if (hasData(wonSoFar)) {
-			wonSoFar = wonSoFar.html();
-			wonSoFar = wonSoFar
-					.substring(wonSoFar.indexOf("Medals won: ") + 12);
-			wonSoFar = wonSoFar.substring(0, wonSoFar.indexOf('<br>'));
-			wonSoFar = parseInt(wonSoFar);
+				// if i have a raid todo
+				var helpsomeone = $('a[href*="/event/"][href*="/raid/detail.php?"]:not(:contains("Broom")):not(:contains("Tired state"))');
 
-			var giveup = $('a[href*="/event/sweetpotato/battle/end_conf.php?"]');
-			var cookMore = $('a[href*="event/sweetpotato/battle/create_conf.php"]');
-			if (wonSoFar <= 500 && hasData(cookMore)) {
-				cookMore[0].click();
-			} else if (hasData(cookMore) && Math.floor(3 * Math.random()) == 0) {
-				// 1 in three of going again
-				cookMore[0].click();
-			} else if (hasData(giveup)) {
-				giveup[0].click();
+				// keep going
+				var keepGoing = $('a[href*="/event/"][href*="/quest/conf.php"]');
+
+				if (hasData(helpsomeone)) {
+					helpsomeone[0].click();
+				} else if (hasData(keepGoing)) {
+					keepGoing[0].click();
+				} else if (hasData(eventRoot)) {
+					var which = Math.floor(eventRoot.length * Math.random());
+
+					eventRoot[which].click();
+				} else {
+					goHome();
+				}
+
+			}
+
+		} else if (window.location.pathname.indexOf("/raid/help_end.php") > 0) {
+			if (hasData(eventRoot)) {
+				var which = Math.floor(eventRoot.length * Math.random());
+
+				eventRoot[which].click();
 			} else {
 				goHome();
 			}
 
 		} else {
-			// auto give up
-			var giveup = $('a[href*="/event/sweetpotato/battle/end_conf.php?"]');
+			var doneHere = false;
+			if (lastHelped + 3 * 60 * 1000 < now) {
+				var hasHelp = $('a[href*="/event/"][href*="/raid/index.php"]');
 
-			if (hasData(giveup)) {
-				giveup[0].click();
-			} else {
-				goHome();
+				if (hasData(hasHelp)) {
+					// set lastHelpered to now and help
+					var data = {};
+					data['lastHelped' + prefix] = now;
+					chrome.storage.local.set(data);
+
+					hasHelp[0].click();
+					doneHere = true;
+				}
 			}
+
+			if (!doneHere) {
+				// other root triggers
+				// start hunt
+				var start = $('a[href*="/event/"][href*="/quest/?"]');
+				if (hasData(start)) {
+					start[0].click();
+					doneHere = true;
+				}
+
+			}
+
+			if (!doneHere) {
+				// go to event
+
+				var gotoevent = $('a[href*="/event/"][href*="/story/index.php"]')
+				if (hasData(eventRoot)) {
+					var which = Math.floor(eventRoot.length * Math.random());
+
+					eventRoot[which].click();
+				} else if (hasData(gotoevent)) {
+					var which = Math.floor(gotoevent.length * Math.random());
+
+					gotoevent[which].click();
+				} else {
+					goHome();
+				}
+			}
+
 		}
 
-	}
-	else {
+	} else {
 		if (hasData(eventRoot)) {
-			eventRoot[0].click();
+			var which = Math.floor(eventRoot.length * Math.random());
+
+			eventRoot[which].click();
 		} else {
 			goHome();
 		}
 	}
 }
+
+// function eventSweetPotato(lastHelped) {
+//
+// // root
+// if (window.location.pathname.indexOf("/index.php")>0) {
+// var startQuest = $('a[href*="/event/"][href*="/quest/?"]');
+// var bakePotatoes = $('a[href*="/event/"][href*="/battle/?"]');
+//
+// if (lastHelped + 1 * 60 * 60 * 1000 < now && hasData(bakePotatoes)) {
+// // set lastHelpered to now and help
+// var data = {};
+// data['lastHelped' + prefix] = now;
+// chrome.storage.local.set(data);
+//
+// bakePotatoes[0].click();
+// } else if (hasData(startQuest)) {
+// startQuest[0].click();
+// } else {
+// goHome();
+// }
+//
+// } else if (window.location.pathname.indexOf("/quest/")>0
+// || window.location.pathname.indexOf("/quest/end.php")>0
+// || window.location.pathname.indexOf("/quest/next.php")>0) {
+// var pickUp = $('a[href*="/event/"][href*="/quest/conf.php"]');
+// var nextQuest = $('a[href*="/event/"][href*="/quest/next_conf.php"]');
+//
+// if (hasData(pickUp)) {
+// pickUp[0].click();
+// } else if (hasData(nextQuest)) {
+// nextQuest[0].click();
+// } else {
+// goHome();
+// }
+// } else if (window.location.pathname.indexOf("/battle/")>0) {
+// var owned = $('td:contains("Potato"):contains("Owned")');
+// if (hasData(owned)) {
+// owned = owned.html();
+// owned = owned.substring(owned.indexOf("Owned") + 7);
+// owned = owned.substring(0, owned.indexOf('<br>'));
+// owned = parseInt(owned);
+//
+// if (owned > 0) {
+// var bake = $('a[href*="/event/"][href*="/battle/create_conf.php"]');
+//
+// if (hasData(bake)) {
+// bake[0].click();
+// } else {
+// goHome();
+// }
+// } else {
+// goHome();
+// }
+// } else {
+// goHome();
+// }
+// } else if (window.location.pathname.indexOf("/battle/battle.php")>0) {
+// // bright
+// var bright = $('div.bright');
+//
+// if (hasData(bright)) {
+// bright.parent('a')[0].click()
+// } else {
+// var buttons = $('a[href*="/event/"][href*="/battle/check_conf.php?"]');
+//
+// if (hasData(buttons)) {
+// var which = Math.floor(buttons.length * Math.random());
+//
+// buttons[which].click();
+// } else {
+// goHome();
+// }
+// }
+// } else if (window.location.pathname.indexOf("/battle/result.php")>0) {
+// var cookMore = $('a[href*="/event/"][href*="/battle/select_conf.php"]');
+//
+// if (hasData(cookMore)) {
+// var which = Math.floor(cookMore.length * Math.random());
+//
+// cookMore[which].click();
+// } else {
+// var bright = $('div.bright')
+// if (hasData(bright)) {
+// bright.before('a')[0].click();
+// } else {
+// goHome();
+// }
+// }
+// } else if (window.location.pathname.indexOf("/battle/select.php")>0) {
+// var wonSoFar = $('td:contains("Medals won:")');
+//
+// if (hasData(wonSoFar)) {
+// wonSoFar = wonSoFar.html();
+// wonSoFar = wonSoFar
+// .substring(wonSoFar.indexOf("Medals won: ") + 12);
+// wonSoFar = wonSoFar.substring(0, wonSoFar.indexOf('<br>'));
+// wonSoFar = parseInt(wonSoFar);
+//
+// var giveup = $('a[href*="/event/"][href*="/battle/end_conf.php?"]');
+// var cookMore = $('a[href*="/event/"][href*="/battle/create_conf.php"]');
+// if (wonSoFar <= 500 && hasData(cookMore)) {
+// cookMore[0].click();
+// } else if (hasData(cookMore) && Math.floor(3 * Math.random()) == 0) {
+// // 1 in three of going again
+// cookMore[0].click();
+// } else if (hasData(giveup)) {
+// giveup[0].click();
+// } else {
+// goHome();
+// }
+//
+// } else {
+// // auto give up
+// var giveup = $('a[href*="/event/"][href*="/battle/end_conf.php?"]');
+//
+// if (hasData(giveup)) {
+// giveup[0].click();
+// } else {
+// goHome();
+// }
+// }
+//
+// } else {
+// if (hasData(eventRoot)) {
+// eventRoot[0].click();
+// } else {
+// goHome();
+// }
+// }
+// }
 
 //
 // Time Check, Only run the event every so often.
@@ -308,7 +492,7 @@ function eventRoot() {
 					}
 
 					// never done anything before
-					eventSweetPotato(value);
+					evenHandler(value);
 				} else {
 					// give up
 					done();
