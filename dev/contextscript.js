@@ -26,12 +26,11 @@ function doneEvent() {
 // choose next activity
 function chooseNext() {
 	// choose a random task.
-	taskList = [ // "friend", "recommend",
-	"event"//,//
-	// "social", "rest", "gohome"
-	/*
-	 * , "stats"
-	 */];
+	taskList = [  "friend", "recommend",
+	"event",//
+	 "social", "rest", "gohome"
+	  , "stats"
+	 ];
 
 	// chose next task, RANDOMLY!
 	var next = Math.floor((Math.random() * taskList.length));
@@ -869,7 +868,7 @@ function letsGo() {
 								goHome();
 								done();
 							} else if (items.task == "stats") {
-								getStats();
+								getStatsRoot();
 
 							} else {
 
@@ -924,7 +923,7 @@ function getStatsRoot() {
 		if (checkStats) {
 
 			// never done anything before
-			observatoryEvent(value);
+			getStats(data);
 		} else {
 			// give up
 			done();
