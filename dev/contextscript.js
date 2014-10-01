@@ -26,7 +26,7 @@ function doneEvent() {
 // choose next activity
 function chooseNext() {
 	// choose a random task.
-	taskList = [ "friend", "recommend", "event", "social", "rest", "gohome"/* ,"stats" */];
+	taskList = [ "friend", "recommend", "event", "social", "rest", "gohome" /*, "stats" */];
 
 	// chose next task, RANDOMLY!
 	var next = Math.floor((Math.random() * taskList.length));
@@ -144,14 +144,15 @@ function eventSweetPotato(lastHelped) {
 		var startQuest = $('a[href*="/event/sweetpotato/quest/?"]');
 		var bakePotatoes = $('a[href*="/event/sweetpotato/battle/?"]');
 
-		if (lastHelped + 1 * 60 * 60 * 1000 > now && hasData(bakePotatoes)) {
+		if (lastHelped + 1 * 60 * 60 * 1000 < now && hasData(bakePotatoes)) {
 			// set lastHelpered to now and help
 			var data = {};
 			data['lastHelped' + prefix] = now;
 			chrome.storage.local.set(data);
 
 			bakePotatoes[0].click();
-		} else if (hasData(startQuest)) {
+		} else 
+			if (hasData(startQuest)) {
 			startQuest[0].click();
 		} else {
 			goHome();
@@ -193,14 +194,21 @@ function eventSweetPotato(lastHelped) {
 			goHome();
 		}
 	} else if (window.location.pathname == "/event/sweetpotato/battle/battle.php") {
-		var buttons = $('a[href*="event/sweetpotato/battle/check_conf.php?"]');
+		//bright
+		var bright = $('div.bright');
+	
+		if(hasData(bright)){
+			bright.parent('a')[0].click()
+		}else{
+			var buttons = $('a[href*="event/sweetpotato/battle/check_conf.php?"]');
 
-		if (hasData(buttons)) {
-			var which = Math.floor(buttons.length * Math.random());
+			if (hasData(buttons)) {
+				var which = Math.floor(buttons.length * Math.random());
 
-			buttons[which].click();
-		} else {
-			goHome();
+				buttons[which].click();
+			} else {
+				goHome();
+			}
 		}
 	} else if (window.location.pathname == "/event/sweetpotato/battle/result.php") {
 		var cookMore = $('a[href*="/event/sweetpotato/battle/select_conf.php"]');
@@ -210,7 +218,12 @@ function eventSweetPotato(lastHelped) {
 
 			cookMore[which].click();
 		} else {
+		var bright = $('div.bright')
+		if(hasData(bright)){
+		bright.before('a')[0].click();
+		}else{
 			goHome();
+		}
 		}
 	} else if (window.location.pathname == "/event/sweetpotato/battle/select.php") {
 		var wonSoFar = $('td:contains("Medals won:")');
@@ -224,7 +237,7 @@ function eventSweetPotato(lastHelped) {
 
 			var giveup = $('a[href*="/event/sweetpotato/battle/end_conf.php?"]');
 			var cookMore = $('a[href*="event/sweetpotato/battle/create_conf.php"]');
-			if (wonSoFar <= 100 && hasData(cookMore)) {
+			if (wonSoFar <= 500 && hasData(cookMore)) {
 				cookMore[0].click();
 			} else if (hasData(cookMore) && Math.floor(3 * Math.random()) == 0) {
 				// 1 in three of going again
