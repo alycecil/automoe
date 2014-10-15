@@ -164,11 +164,11 @@ function letsGoRecomend() {
 function evenHandler(lastHelped) {
     var eventRoot = $('a[href*="/event/"][href*="/index.php"]');
 
-    var life = $('img[src*="/img/event/"][src*="/sp/gauge_red.png?nocache=1"]');
+    var life = $('img[src*="/img/event/"][src*="/sp/gauge_"][src*=".png?nocache=1"][width*="%"]');
 
     if (hasData(life)) {
         life = parseInt(life.attr('width'));
-    } else {
+    }else{
         life = null;
 
         if (hasData(eventRoot)) {
@@ -282,11 +282,16 @@ function evenHandler(lastHelped) {
 
                 // keep going
                 var keepGoing = $('a[href*="/event/"][href*="/quest/conf.php"]');
+                
+                //next stage
+                var nextQuest = $('a[href*="/event/"][href*="/quest/next_conf.php"]');
 
                 if (hasData(helpsomeone)) {
                     helpsomeone[0].click();
                 } else if (hasData(keepGoing)) {
                     keepGoing[0].click();
+                }else if (hasData(nextQuest)) {
+                    nextQuest[0].click();
                 } else if (hasData(eventRoot)) {
                     var which = Math.floor(eventRoot.length * Math.random());
 
