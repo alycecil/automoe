@@ -27,7 +27,7 @@ function doneEvent() {
 function chooseNext() {
     // choose a random task.
     taskList = ["friend", "recommend",
-        "event", //
+        "event",
         "social", "rest", "gohome", "stats"
     ];
 
@@ -272,7 +272,7 @@ function evenHandler(lastHelped) {
             }
 
             if (!doneHere) {
-
+				
                 // maybe check stamina by % redbar
                 // var encounter =
                 // $('a[href*="/event/"][href*="/raid/detail.php?"]').find(".encount");
@@ -285,8 +285,13 @@ function evenHandler(lastHelped) {
                 
                 //next stage
                 var nextQuest = $('a[href*="/event/"][href*="/quest/next_conf.php"]');
+                
+                //dont give item 
+                var sayNo = $('a[href*="/event/"][href*="item_conf.php"]:contains("No")');
 
-                if (hasData(helpsomeone)) {
+                if (hasData(sayNo)) {
+                    sayNo[0].click();
+                } else if (hasData(helpsomeone)) {
                     helpsomeone[0].click();
                 } else if (hasData(keepGoing)) {
                     keepGoing[0].click();
